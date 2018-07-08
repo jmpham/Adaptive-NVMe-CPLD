@@ -1,3 +1,25 @@
+// *****************************************************************************
+// *                     C O P Y R I G H T   N O T I C E                       *
+// *****************************************************************************
+// *                                                                           *
+// * Confidential                                                              *
+// *                                                                           *
+// * (c) Copyright 2011-2016 Hewlett Packard Enterprise Development LP         *
+// *                                                                           *
+// * Copyrights. You may not duplicate, install or use software in violation   *
+// * of its copyright or applicable license terms, including the software      *
+// * installed on your computer or on network areas under your control. Unless *
+// * proper permission has been obtained from the copyright owner, you may not *
+// * copy for any reason any copyrighted materials, including text, artwork,   *
+// * images, photographs, videos, music, web pages and other forms of          *
+// * expression, whether they are in hardcopy or electronic media.             *
+// *                                                                           *
+// *****************************************************************************
+// * HPE Engineer: Jonathan Pham                                               *
+// * Design Name : Adaptive NVMe code                                          *
+// * Description : Parallel to Serial Data Output to System CPLD               *
+// *****************************************************************************
+
 module shiftReg #(
 	parameter TOTAL_BIT_COUNT = 8)(
 
@@ -15,12 +37,6 @@ module shiftReg #(
     output 						s_out
    );
  	
- 	// simulation
- 	//wire	serclk;
- 	//wire	reset_n;
- 	//wire	[TOTAL_BIT_COUNT-1:0] par_data_in;
- 	//wire	par_load_in_n;
- 	//wire	s_out;
 
  	reg [TOTAL_BIT_COUNT-1:0]   shift_reg;
 

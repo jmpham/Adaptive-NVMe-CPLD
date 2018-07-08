@@ -1,8 +1,8 @@
-`timescale 1ns / 1ps
+`timescale 1ns / 10ps
 module shiftRegTB;
 	parameter Total = 8;
 	// Inputs
-	reg serclk ;
+	reg serclk = 0;
 	reg reset_n;
 	reg par_load_in_n;
 	reg [7:0] par_data_in;
@@ -20,15 +20,11 @@ module shiftRegTB;
 
 	);
  
- integer i, j;
- initial begin
+
  
-	 serclk = 0;
-	 for(i =0; i<=40; i=i+1)
-	 begin
-	  	#10 serclk = ~serclk;
-	 end
- end
+always	  	#1 serclk = ~serclk;
+	 
+ 
  
 initial begin
  
@@ -42,12 +38,15 @@ par_data_in = {8{1'b0}};
 #5 par_data_in = {8{1'b1}};
 #5 par_load_in_n = 0;
 #5 par_load_in_n = 1;
-#200 $finish;
+#5 par_load_in_n = 0;
+#1 par_load_in_n = 1;
+#5 reset_n = 0;
+#2 $finish;
 
  end  
  
 		initial begin
-		 $monitor("serclk=%d par_data_in=%d,s_out=%d",serclk, par_data_in, s_out);
+		 $monitor("serclk=%d par_data_in=%d,s_out=%d, par_load_in_n=%d",serclk, par_data_in, s_out, par_load_in_n);
 		 end
  
 endmodule
