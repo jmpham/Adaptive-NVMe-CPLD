@@ -38,27 +38,29 @@ module top_level (
     input 						AROC_SS_LD_N,
 
     // Serial Output
-    output 						AROS_SS_DATO
-) 
+    output 						AROC_SS_DATO
+); 
+
 
 wire [7:0] sas_cpld_ver_byte1;
 wire [7:0] sas_cpld_ver_byte2; 
 
+defparam pvt_gpo.TOTAL_BIT_COUNT = 48;
 shiftReg pvt_gpo(
 	.serclk 					(AROC_SS_CLK),
 	.reset_n 					(PGD_AROC),
 	.par_load_in_n				(AROC_SS_LD_N),
 	.par_data_in				({// Byte5, From MSbit -> LSbit
-                     			nc_aroc_pvt_gpi_b5[7:1],
-		                     	aroc_id[3],
+                     			7'b0,
+		                     	ROC_ID_3,
 
 		                     	// Byte4, from MSbit -> LSbit
-		                     	aroc_id[2],
-		                     	aroc_id[1],
-		                     	aroc_id[0],
-		                     	sas_therm_pwrdown,
-		                     	sas_therm,
-		                     	sas_pgd_fault_fsm[2:0],
+		                     	ROC_ID_2,
+		                     	ROC_ID_1,
+		                     	ROC_ID_0,
+		                     	1'b0, //sas_therm_pwrdown,
+		                     	1'b0, //sas_therm,
+		                     	3'b0, //sas_pgd_fault_fsm[2:0],
 
 		                     	// Byte3, from MSbit -> LSbit
 		                     	8'b0, // Used to be PGD faults for SAS, but adaptive NVMe doesn't have this - Jonathan
@@ -67,11 +69,13 @@ shiftReg pvt_gpo(
 		                     	8'b0,
 
 		                     	// Byte1, from MSbit -> LSbit - bootleg version - NEED TO CREATE GLOBAL DEFINITION FILE FOR THIS
-		                     	sas_cpld_ver_byte1[7:0],
+		                     	8'b0, //sas_cpld_ver_byte1[7:0]
 
 		                     	// Byte0, from MSbit -> LSbit - release version - NEED TO CREATE GLOBAL DEFINITION FILE FOR THIS
-		                     	sas_cpld_ver_byte2[7:0]})
-)
+		                     	8'b0}), //sas_cpld_ver_byte2[7:0]}),
+
+    .s_out						(AROC_SS_DATO)
+);
 
 
 endmodule
