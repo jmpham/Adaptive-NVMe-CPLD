@@ -17,24 +17,24 @@
 // *****************************************************************************
 // * HPE Engineer: Jonathan Pham                                               *
 // * Design Name : Adaptive NVMe code                                          *
-// * Description : Parallel to Serial Data Output to System CPLD               *
+// * Description : Serial to Parallel input data to Adaptive NVMe Card's CPLD  *
 // *****************************************************************************
 
-module shiftReg #(
+module shiftRegIn #(
 	parameter TOTAL_BIT_COUNT = 8)(
 
     // Input Clocks and Resets
-    input 						serclk, 
-    input 						reset_n,
+    input 						 serclk, 
+    input 						 reset_n,
 
-    // Parallel Data In
-    input [TOTAL_BIT_COUNT-1:0] par_data_in,
+    // SERIAL Data In from baseboard
+    input                        ser_data_in,
 
     // Shift Control Bits
-    input 						par_load_in_n,
+    input 						 ser_load_in_n,
 
-    // Serial Output
-    output 						s_out
+    // PARALLEL Output
+    output reg [TOTAL_BIT_COUNT-1:0] p_out
    );
  	
 
@@ -42,27 +42,28 @@ module shiftReg #(
 
  	//------------------------------------------------------------------------------
 	// Parallel to Serial Converter
-    // When in Reset: shift register contains all 0s
-    // When out of Reset:
-    //          load_n is enabled:      load all parallel bits into shift register
-    //          load_n is not enabled:  shift all bits in shift register to the right
+    // When in reset: shift register contains all 0s
+    // When out of reset:
+    //          When load_n is enabled:  Grab serial data in 1 by 1 into shift register
+    //          When load_n not enabled: push out all bits in shift register simultaneously
 	//------------------------------------------------------------------------------
    
     always@(posedge serclk or negedge reset_n)begin
     	if (!reset_n)begin
-    		shift_reg = {TOTAL_BIT_COUNT{1'b0}};
+            p_out     <= {TOTAL_BIT_COUNT{1'b0}}; 
+    		shift_reg <= {TOTAL_BIT_COUNT{1'b0}};
+             
     	end
     	else begin
-    		if (!par_load_in_n)begin
-    			shift_reg = par_data_in;
+    		if (!ser_load_in_n)begin
+    			shift_reg = {ser_data_in,shift_reg[TOTAL_BIT_COUNT-1:1]};
     		end
     		else begin
-    			shift_reg = {1'b0,shift_reg[TOTAL_BIT_COUNT-1:1]};
+    			p_out = shift_reg;
     		end
     	end
     end
- 	
- 	assign s_out = shift_reg[0];
- 
+    
+
 endmodule
 
